@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{name}} – Portfolio</title>
+  <meta name="description" content="{{headline}}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- Injected JSON data with safe fallback -->
+  <script id="portfolio-data" type="application/json">
+{{DATA_JSON}}
+  </script>
+
+  <script>
+    let INJECTED_DATA = null;
+    try {
+      const dataTag = document.getElementById('portfolio-data');
+      const rawText = dataTag ? dataTag.textContent.trim() : '';
+      if (rawText && !rawText.includes('{{DATA_JSON}}') && !rawText.startsWith('{{')) {
+        INJECTED_DATA = JSON.parse(rawText);
+      }
+    } catch (e) {
+      console.warn('Using default demo data:', e);
+      INJECTED_DATA = null;
+    }
+
+    const DEFAULT_DATA = {
+      name: "Peter Jones",
+      headline: "Creative Developer & Visual Designer",
+      about: "I craft distinctive, eye-catching digital experiences that help daring brands cut through the digital noise. Specialized in brutalist interfaces, creative direction, and bespoke frontend development.",
+      contact: {
+        location: "London, UK",
+        email: "peter@example.com",
+        phone: "+44 20 7946 0991"
+      },
+      links: {
+        github: "https://github.com",
+        linkedin: "https://linkedin.com",
+        website: "https://example.com"
+      },
+      skills: ["Creative Direction", "Three.js", "WebGL", "TypeScript", "React", "Next.js", "Brand Identity", "Motion Graphics"],
+      experience: [
+        {
+          company: "Subversive Studio",
+          role: "Creative Technologist",
+          start: "2022",
+          end: "Present",
+          description: "Engineered high-concept experimental web platforms for cultural institutions and independent fashion labels."
+        },
+        {
+          company: "Monolith Media",
+          role: "Lead Interactive Designer",
+          start: "2019",
+          end: "2022",
+          description: "Directed art department and frontend interactive builds for award-winning digital campaigns."
+        }
+      ],
+      education: [
+        {
+          school: "Royal College of Art — London",
+          degree: "M.A. in Visual Communication",
+          start: "2017",
+          end: "2019"
+        }
+      ],
+      projects: [
+        {
+          name: "VORTEX SOUND LABS",
+          description: "Interactive 3D audio visualizer and algorithmic vinyl sampler designed for indie sound producers.",
+          url: "https://github.com",
+          tech: ["WebGL", "Three.js", "WebAudio API"]
+        },
+        {
+          name: "NEO-BRUTAL TOKENS",
+          description: "Experimental typographic design system inspired by 90s zine culture and industrial printing artifacts.",
+          url: "https://github.com",
+          tech: ["CSS Houdini", "TypeScript", "Vite"]
+        }
+      ],
+      sections: {
+        showProjects: true,
+        showEducation: true,
+        showExperience: true,
+        showSkills: true
+      }
+    };
+
+    function normalizeData(raw) {
+      if (!raw) return DEFAULT_DATA;
+      return {
+        name: raw.name || raw.hero?.name || DEFAULT_DATA.name,
+        headline: raw.headline || raw.hero?.headline || DEFAULT_DATA.headline,
+        about: raw.about?.summary || (typeof raw.about === 'string' ? raw.about : DEFAULT_DATA.about),
+        avatarUrl: raw.avatarUrl || raw.photo || raw.image || (raw.profile && raw.profile.avatarUrl) || '',
+        contact: {
+          location: raw.contact?.location || '',
+          email: raw.contact?.email || '',
+          phone: raw.contact?.phone || ''
+        },
+        links: {
+          github: raw.links?.github || raw.contact?.links?.github || '',
+          linkedin: raw.links?.linkedin || raw.contact?.links?.linkedin || '',
+          website: raw.links?.website || raw.contact?.links?.website || ''
+        },
+        skills: Array.isArray(raw.skills) ? (typeof raw.skills[0] === 'string' ? raw.skills : raw.skills.flatMap(c => c.items || [])) : DEFAULT_DATA.skills,
+        experience: Array.isArray(raw.experience) ? raw.experience : DEFAULT_DATA.experience,
+        education: Array.isArray(raw.education) ? raw.education : DEFAULT_DATA.education,
+        projects: Array.isArray(raw.projects) ? raw.projects : DEFAULT_DATA.projects,
+        sections: {
+          showProjects: raw.sections?.showProjects ?? true,
+          showEducation: raw.sections?.showEducation ?? true,
+          showExperience: raw.sections?.showExperience ?? true,
+          showSkills: raw.sections?.showSkills ?? true
+        }
+      };
+    }
+
+    const DATA = normalizeData(INJECTED_DATA);
+
+    function el(tag, attrs, ...children) {
+      const e = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs || {})) {
+        if (k === 'class') e.className = v;
+        else if (k === 'href') e.href = v;
+        else if (k === 'target') e.target = v;
+        else if (k === 'src') e.src = v;
+        else if (k === 'alt') e.alt = v;
+        else e.setAttribute(k, v);
+      }
+      for (const c of children) {
+        if (!c) continue;
+        e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+      }
+      return e;
+    }
+
+    function renderNav() {
+      return el('nav', { class: 'grunge-nav' },
+        el('div', { class: 'wrap nav-row' },
+          el('div', { class: 'nav-brand-box' },
+            el('img', { src: 'assets/ui/symbolWhite.svg', alt: 'Symbol', class: 'brand-symbol' }),
+            el('span', { class: 'brand-title' }, DATA.name)
+          ),
+          el('ul', { class: 'nav-items' },
+            el('li', {}, el('a', { href: '#work', class: 'nav-item-link' }, 'Works')),
+            el('li', {}, el('a', { href: '#experience', class: 'nav-item-link' }, 'History')),
+            el('li', {}, el('a', { href: '#skills', class: 'nav-item-link' }, 'Arsenal')),
+            el('li', {}, el('a', { href: '#contact', class: 'nav-item-link' }, 'Contact'))
+          ),
+          el('div', { class: 'nav-status-badge' },
+            el('span', { class: 'pulse-dot' }),
+            'Available for work'
+          )
+        )
+      );
+    }
+
+    function renderHero() {
+      return el('header', { class: 'hero-sec' },
+        el('div', { class: 'wrap' },
+          el('p', { class: 'hero-lead-text' }, DATA.about),
+          el('div', { class: 'hero-main-grid' },
+            el('div', {},
+              el('h1', { class: 'hero-name-big' }, DATA.name),
+              el('p', { class: 'hero-subheadline' }, DATA.headline),
+              el('div', { style: 'display: flex; gap: 1rem; flex-wrap: wrap;' },
+                el('a', { href: '#contact', class: 'grunge-btn' }, 'Initiate Contact ➔'),
+                DATA.links.github ? el('a', { href: DATA.links.github, target: '_blank', class: 'grunge-btn grunge-btn-outline' }, 'GitHub ↗') : null
+              )
+            ),
+            el('div', { class: 'hero-portrait-card' },
+              el('img', { src: DATA.avatarUrl || 'assets/images/peter.jpg', alt: DATA.name, class: 'hero-portrait-img' }),
+              el('div', { class: 'barcode-badge' },
+                el('img', { src: 'assets/ui/barcode.svg', alt: 'Barcode', class: 'barcode-img' })
+              )
+            )
+          )
+        )
+      );
+    }
+
+    function renderWorks() {
+      if (!DATA.sections.showProjects || !DATA.projects.length) return null;
+
+      const items = DATA.projects.map(proj => {
+        const tags = (proj.tech || []).map(t => el('span', { class: 'grunge-tag' }, t));
+
+        return el('div', { class: 'vinyl-card' },
+          el('div', { class: 'vinyl-thumb-holder' },
+            el('img', { src: 'assets/images/peter2.jpg', alt: proj.name, class: 'vinyl-cover' }),
+            el('img', { src: 'assets/work-card/vinyldisk.png', alt: 'Vinyl', class: 'vinyl-disc' })
+          ),
+          el('h3', { class: 'work-name' },
+            proj.url ? el('a', { href: proj.url, target: '_blank' }, proj.name + ' ↗') : proj.name
+          ),
+          el('p', { class: 'work-desc' }, proj.description),
+          tags.length ? el('div', { class: 'work-tech-row' }, ...tags) : null
+        );
+      });
+
+      return el('section', { id: 'work', style: 'padding: 5rem 0;' },
+        el('div', { class: 'wrap' },
+          el('div', { class: 'section-tag-box' },
+            el('h2', { class: 'section-title-huge' }, 'Selected Works'),
+            el('span', { class: 'section-counter' }, `[0${DATA.projects.length}]`)
+          ),
+          el('div', { class: 'works-grid' }, ...items)
+        )
+      );
+    }
+
+    function renderExperience() {
+      if (!DATA.sections.showExperience || !DATA.experience.length) return null;
+
+      const items = DATA.experience.map(exp =>
+        el('div', { class: 'timeline-item' },
+          el('div', { class: 'timeline-date' }, (exp.start || '') + (exp.start && exp.end ? ' — ' : '') + (exp.end || 'Present')),
+          el('div', { class: 'timeline-content' },
+            el('h4', { class: 'timeline-heading' }, exp.role),
+            el('span', { class: 'timeline-sub' }, exp.company),
+            el('p', { style: 'font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem;' }, exp.description)
+          )
+        )
+      );
+
+      return el('section', { id: 'experience', style: 'padding: 5rem 0;' },
+        el('div', { class: 'wrap' },
+          el('div', { class: 'section-tag-box' },
+            el('h2', { class: 'section-title-huge' }, 'Track Record'),
+            el('span', { class: 'section-counter' }, '// RECENT')
+          ),
+          el('div', { class: 'timeline-block' }, ...items)
+        )
+      );
+    }
+
+    function renderSkills() {
+      if (!DATA.sections.showSkills || !DATA.skills.length) return null;
+
+      const tags = DATA.skills.map(s => el('div', { class: 'skill-tag-grunge' }, s));
+
+      return el('section', { id: 'skills', style: 'padding: 5rem 0;' },
+        el('div', { class: 'wrap' },
+          el('div', { class: 'section-tag-box' },
+            el('h2', { class: 'section-title-huge' }, 'Core Arsenal'),
+            el('span', { class: 'section-counter' }, '// TECH')
+          ),
+          el('div', { class: 'skills-masonry' }, ...tags)
+        )
+      );
+    }
+
+    function renderContact() {
+      const links = [];
+      if (DATA.contact.email) {
+        links.push(el('a', { href: `mailto:${DATA.contact.email}`, class: 'grunge-btn' }, `✉ ${DATA.contact.email}`));
+      }
+      if (DATA.links.github) {
+        links.push(el('a', { href: DATA.links.github, target: '_blank', class: 'grunge-btn grunge-btn-outline' }, 'GitHub ↗'));
+      }
+      if (DATA.links.linkedin) {
+        links.push(el('a', { href: DATA.links.linkedin, target: '_blank', class: 'grunge-btn grunge-btn-outline' }, 'LinkedIn ↗'));
+      }
+
+      return el('section', { id: 'contact', style: 'padding: 5rem 0;' },
+        el('div', { class: 'wrap' },
+          el('div', { class: 'contact-ticket' },
+            el('h2', { class: 'ticket-header' }, "Ready to build something unforgettable?"),
+            el('p', { class: 'ticket-desc' },
+              "I take on select client commissions, lead technical direction, and build bold digital products. Let's start the conversation."
+            ),
+            links.length ? el('div', { class: 'ticket-actions' }, ...links) : null
+          )
+        )
+      );
+    }
+
+    function renderFooter() {
+      return el('footer', { class: 'footer-grunge' },
+        el('div', { class: 'wrap footer-grunge-inner' },
+          el('div', {}, `© ${new Date().getFullYear()} ${DATA.name}`),
+          el('div', {}, 'Designed with Grunge Editorial aesthetic.')
+        )
+      );
+    }
+
+    function render() {
+      const app = document.getElementById('app');
+      app.appendChild(renderNav());
+      app.appendChild(renderHero());
+
+      const w = renderWorks();
+      if (w) app.appendChild(w);
+
+      const exp = renderExperience();
+      if (exp) app.appendChild(exp);
+
+      const sk = renderSkills();
+      if (sk) app.appendChild(sk);
+
+      app.appendChild(renderContact());
+      app.appendChild(renderFooter());
+    }
+
+    render();
+
+    // Smooth In-Page Anchor Navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const id = this.getAttribute('href').slice(1);
+        if (!id) return;
+        const target = document.getElementById(id);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (history.pushState) history.pushState(null, '', '#' + id);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

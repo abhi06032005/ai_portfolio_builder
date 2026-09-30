@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{name}} – Portfolio</title>
+  <meta name="description" content="{{headline}}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Animated Memphis Geometric Confetti Background -->
+  <div class="confetti-layer" id="confetti-layer" aria-hidden="true">
+    <!-- 1. Coral Triangle -->
+    <svg class="confetti-shape anim-drift" style="top: 8%; left: 4%; width: 52px; height: 52px;" viewBox="0 0 60 60">
+      <polygon points="30,6 54,52 6,52" fill="#ff5b57" stroke="#17140d" stroke-width="4" stroke-linejoin="round" />
+    </svg>
+
+    <!-- 2. Teal Quarter-Arc -->
+    <svg class="confetti-shape anim-sway" style="top: 14%; right: 6%; width: 64px; height: 64px;" viewBox="0 0 64 64">
+      <path d="M 6 58 A 52 52 0 0 1 58 6 L 58 58 Z" fill="#12b3a4" stroke="#17140d" stroke-width="4" stroke-linejoin="round" />
+    </svg>
+
+    <!-- 3. Mustard Dotted Circle -->
+    <svg class="confetti-shape anim-pulse" style="top: 38%; left: 3%; width: 56px; height: 56px;" viewBox="0 0 60 60">
+      <circle cx="30" cy="30" r="24" fill="#ffc531" stroke="#17140d" stroke-width="4" stroke-dasharray="4 6" />
+    </svg>
+
+    <!-- 4. Violet Spinning Plus-Sign -->
+    <svg class="confetti-shape anim-spin" style="top: 48%; right: 4%; width: 48px; height: 48px;" viewBox="0 0 50 50">
+      <path d="M 21 4 L 29 4 L 29 21 L 46 21 L 46 29 L 29 29 L 29 46 L 21 46 L 21 29 L 4 29 L 4 21 L 21 21 Z" fill="#6b5be6" stroke="#17140d" stroke-width="3" stroke-linejoin="round" />
+    </svg>
+
+    <!-- 5. Black Squiggle Bacteria Line -->
+    <svg class="confetti-shape anim-sway" style="top: 24%; left: 46%; width: 72px; height: 32px;" viewBox="0 0 80 36">
+      <path d="M 4 18 Q 20 2 36 18 T 68 18" fill="none" stroke="#17140d" stroke-width="5" stroke-linecap="round" />
+    </svg>
+
+    <!-- 6. Mustard Half-Circle -->
+    <svg class="confetti-shape anim-bob" style="top: 68%; left: 5%; width: 60px; height: 36px;" viewBox="0 0 64 36">
+      <path d="M 4 32 A 28 28 0 0 1 60 32 Z" fill="#ffc531" stroke="#17140d" stroke-width="4" stroke-linejoin="round" />
+    </svg>
+
+    <!-- 7. Small Teal Solid Dot -->
+    <svg class="confetti-shape anim-pulse" style="top: 30%; right: 48%; width: 22px; height: 22px;" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="#12b3a4" stroke="#17140d" stroke-width="3" />
+    </svg>
+
+    <!-- 8. Sky Zigzag Line -->
+    <svg class="confetti-shape anim-bob" style="top: 72%; right: 8%; width: 68px; height: 36px;" viewBox="0 0 70 36">
+      <polyline points="4,28 20,8 36,28 52,8 68,28" fill="none" stroke="#3aa0ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+
+    <!-- 9. Coral Striped Circle -->
+    <svg class="confetti-shape anim-spin-fast" style="top: 86%; left: 45%; width: 58px; height: 58px;" viewBox="0 0 60 60">
+      <defs>
+        <pattern id="stripes" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="8" stroke="#17140d" stroke-width="3" />
+        </pattern>
+      </defs>
+      <circle cx="30" cy="30" r="26" fill="#ff5b57" stroke="#17140d" stroke-width="4" />
+      <circle cx="30" cy="30" r="26" fill="url(#stripes)" opacity="0.35" />
+    </svg>
+  </div>
+
+  <div id="app"></div>
+
+  <!-- Injected by template service or fallback to default sample portfolio -->
+  <script id="portfolio-data" type="application/json">
+{{DATA_JSON}}
+  </script>
+
+  <script>
+    let INJECTED_DATA = null;
+    try {
+      const dataTag = document.getElementById('portfolio-data');
+      const rawText = dataTag ? dataTag.textContent.trim() : '';
+      if (rawText && !rawText.includes('{{DATA_JSON}}') && !rawText.startsWith('{{')) {
+        INJECTED_DATA = JSON.parse(rawText);
+      }
+    } catch (e) {
+      console.warn('Using default demo data:', e);
+      INJECTED_DATA = null;
+    }
+
+    const DEFAULT_DATA = {
+      name: "Taylor Reed",
+      headline: "Full-Stack Engineer & Product Builder",
+      about: "I build fast, resilient web applications with crisp design systems and rock-solid architecture. Passionate about TypeScript, modern cloud infrastructure, and software that users actually love using.",
+      contact: {
+        location: "San Francisco, CA",
+        email: "taylor@example.com",
+        phone: "+1 (555) 234-5678"
+      },
+      links: {
+        github: "https://github.com",
+        linkedin: "https://linkedin.com",
+        website: "https://example.com"
+      },
+      skills: [
+        "TypeScript", "React", "Next.js", "Node.js", "PostgreSQL",
+        "Cloudflare Workers", "Docker", "GraphQL", "TailwindCSS", "Python", "Redis", "Figma"
+      ],
+      experience: [
+        {
+          company: "Vanguard Studio",
+          role: "Lead Full-Stack Engineer",
+          start: "2023",
+          end: "Present",
+          description: "Spearheaded distributed edge services serving 1.2M daily queries with sub-50ms latency. Designed resilient micro-frontends and mentored a team of 6 engineers."
+        },
+        {
+          company: "HyperLogic Systems",
+          role: "Senior Software Engineer",
+          start: "2021",
+          end: "2023",
+          description: "Engineered real-time data synchronization engine using WebSockets and Redis. Cut customer onboarding friction by 40% through automated pipeline tooling."
+        },
+        {
+          company: "PixelCraft Labs",
+          role: "Frontend Developer",
+          start: "2019",
+          end: "2021",
+          description: "Built accessible component libraries and high-fidelity interactive dashboard visualizations using React, Canvas, and TypeScript."
+        }
+      ],
+      education: [
+        {
+          school: "University of California, Berkeley",
+          degree: "B.S. in Computer Science",
+          start: "2015",
+          end: "2019"
+        }
+      ],
+      projects: [
+        {
+          name: "ApexFlow Automator",
+          description: "Real-time visual workflow engine for automating multi-service deployments with instant visual rollback and audit logging.",
+          url: "https://github.com",
+          tech: ["TypeScript", "React", "Node.js", "WebSockets"]
+        },
+        {
+          name: "EdgeVault KeyStore",
+          description: "Ultra-low-latency distributed key-value cache built for edge runtimes with optimistic locking and automatic geographic failover.",
+          url: "https://github.com",
+          tech: ["Go", "Cloudflare Workers", "SQLite", "gRPC"]
+        },
+        {
+          name: "Prism Design System",
+          description: "An open-source, high-contrast, accessible UI component toolkit featuring physics-driven micro-interactions and tokens.",
+          url: "https://github.com",
+          tech: ["React", "TypeScript", "Storybook", "Vanilla CSS"]
+        }
+      ],
+      sections: {
+        showProjects: true,
+        showEducation: true,
+        showExperience: true,
+        showSkills: true
+      }
+    };
+
+    // Normalize data across both schema formats (ResumeData & PortfolioContent)
+    function normalizeData(raw) {
+      if (!raw) return DEFAULT_DATA;
+
+      const name = raw.name || raw.hero?.name || DEFAULT_DATA.name;
+      const headline = raw.headline || raw.hero?.headline || DEFAULT_DATA.headline;
+      const about = raw.about?.summary || (typeof raw.about === 'string' ? raw.about : DEFAULT_DATA.about);
+
+      // Contact normalization
+      const contact = {
+        email: raw.contact?.email || '',
+        phone: raw.contact?.phone || '',
+        location: raw.contact?.location || ''
+      };
+
+      // Links normalization
+      const links = {
+        github: raw.links?.github || raw.contact?.links?.github || '',
+        linkedin: raw.links?.linkedin || raw.contact?.links?.linkedin || '',
+        website: raw.links?.website || raw.contact?.links?.website || ''
+      };
+
+      // Skills normalization
+      let skills = [];
+      if (Array.isArray(raw.skills)) {
+        if (typeof raw.skills[0] === 'string') {
+          skills = raw.skills;
+        } else if (raw.skills[0]?.items) {
+          skills = raw.skills.flatMap(cat => cat.items || []);
+        }
+      }
+      if (!skills.length) skills = DEFAULT_DATA.skills;
+
+      // Experience normalization
+      let experience = [];
+      if (Array.isArray(raw.experience)) {
+        experience = raw.experience.map(exp => ({
+          company: exp.company || 'Tech Company',
+          role: exp.role || 'Software Engineer',
+          start: exp.start || (exp.period ? exp.period.split('–')[0]?.trim() : ''),
+          end: exp.end || (exp.period ? exp.period.split('–')[1]?.trim() : 'Present'),
+          description: exp.description || (exp.keyAchievements ? exp.keyAchievements.join(' ') : '')
+        }));
+      }
+
+      // Projects normalization
+      let projects = [];
+      if (Array.isArray(raw.projects)) {
+        projects = raw.projects.map(p => ({
+          name: p.name || p.title || 'Featured Project',
+          description: p.description || '',
+          url: p.url || p.liveUrl || p.sourceUrl || '',
+          tech: p.tech || p.technologies || []
+        }));
+      }
+
+      // Education normalization
+      let education = [];
+      if (Array.isArray(raw.education)) {
+        education = raw.education.map(edu => ({
+          school: edu.school || edu.institution || 'University',
+          degree: edu.degree || 'Degree Program',
+          start: edu.start || '',
+          end: edu.end || (edu.period ? edu.period : '')
+        }));
+      }
+
+      const sections = {
+        showProjects: raw.sections?.showProjects ?? true,
+        showEducation: raw.sections?.showEducation ?? true,
+        showExperience: raw.sections?.showExperience ?? true,
+        showSkills: raw.sections?.showSkills ?? true
+      };
+
+      const avatarUrl = raw.avatarUrl || raw.photo || raw.image || (raw.profile && raw.profile.avatarUrl) || '';
+
+      return {
+        name,
+        headline,
+        about,
+        avatarUrl,
+        contact,
+        links,
+        skills,
+        experience,
+        education,
+        projects,
+        sections
+      };
+    }
+
+    const DATA = normalizeData(INJECTED_DATA);
+
+    // DOM Builder Helpers
+    function el(tag, attrs, ...children) {
+      const e = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs || {})) {
+        if (k === 'class') e.className = v;
+        else if (k === 'html') e.innerHTML = v;
+        else if (k === 'href') e.href = v;
+        else if (k === 'target') e.target = v;
+        else e.setAttribute(k, v);
+      }
+      for (const c of children) {
+        if (!c) continue;
+        e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+      }
+      return e;
+    }
+
+    // Render Navigation
+    function renderNav() {
+      const initial = (DATA.name || 'D').charAt(0).toUpperCase();
+
+      const links = [
+        el('li', {}, el('a', { href: '#about', class: 'nav-link' }, 'About')),
+        DATA.sections.showProjects && DATA.projects.length ? el('li', {}, el('a', { href: '#projects', class: 'nav-link' }, 'Projects')) : null,
+        DATA.sections.showSkills && DATA.skills.length ? el('li', {}, el('a', { href: '#skills', class: 'nav-link' }, 'Skills')) : null,
+        DATA.sections.showExperience && DATA.experience.length ? el('li', {}, el('a', { href: '#experience', class: 'nav-link' }, 'Experience')) : null,
+        el('li', {}, el('a', { href: '#contact', class: 'nav-link' }, 'Contact'))
+      ].filter(Boolean);
+
+      return el('nav', { class: 'top-nav' },
+        el('div', { class: 'wrap nav-inner' },
+          el('div', { class: 'nav-brand' },
+            el('div', { class: 'logo-tile' }, initial),
+            el('span', { class: 'brand-text' }, DATA.name)
+          ),
+          el('ul', { class: 'nav-links' }, ...links),
+          el('a', { href: '#contact', class: 'nav-cta' }, 'Say Hello ➔')
+        )
+      );
+    }
+
+    // Render Hero Section
+    function renderHero() {
+      // Split headline and add marker highlight to the last 2 words
+      const words = DATA.headline.split(' ');
+      let headlineHtml = '';
+      if (words.length <= 3) {
+        headlineHtml = `<span class="marker-highlight marker-mustard">${words.join(' ')}</span>`;
+      } else {
+        const leadWords = words.slice(0, words.length - 2).join(' ');
+        const highlight1 = words[words.length - 2];
+        const highlight2 = words[words.length - 1];
+        headlineHtml = `${leadWords} <span class="marker-highlight marker-mustard">${highlight1}</span> <span class="marker-highlight marker-teal">${highlight2}</span>`;
+      }
+
+      const avatarColors = ['#ff5b57', '#12b3a4', '#ffc531', '#6b5be6'];
+      const initials = ['🚀', '⚡', '💻', '✨'];
+
+      const avatarEls = initials.map((icon, i) =>
+        el('div', {
+          class: 'avatar-bubble',
+          style: `background-color: ${avatarColors[i]}; z-index: ${4 - i};`
+        }, icon)
+      );
+
+      const topProjectsCount = DATA.projects.length || 6;
+      const topSkillsCount = DATA.skills.length || 12;
+
+      return el('header', { class: 'hero-section' },
+        el('div', { class: 'wrap hero-grid' },
+          // Left Column
+          el('div', { class: 'hero-left' },
+            DATA.avatarUrl ? el('div', { class: 'hero-avatar-frame' },
+              el('img', { src: DATA.avatarUrl, alt: DATA.name, class: 'hero-avatar-img' }),
+              el('span', { class: 'hero-avatar-badge' }, '✦')
+            ) : null,
+            el('div', { class: 'eyebrow-pill' },
+              el('span', { class: 'eyebrow-dot' }),
+              DATA.contact.location ? `Available • ${DATA.contact.location}` : 'Available for High-Impact Roles'
+            ),
+            el('h1', { class: 'hero-headline', html: headlineHtml }),
+            el('p', { class: 'hero-lead' }, DATA.about),
+            el('div', { class: 'cta-row' },
+              el('a', { href: '#projects', class: 'btn-pill btn-primary-coral' }, 'Explore Work ➔'),
+              DATA.links.github
+                ? el('a', { href: DATA.links.github, target: '_blank', class: 'btn-pill btn-secondary-white' }, 'GitHub Profile ↗')
+                : el('a', { href: '#contact', class: 'btn-pill btn-secondary-white' }, 'Get In Touch')
+            ),
+            el('div', { class: 'trust-row' },
+              el('div', { class: 'avatar-stack' }, ...avatarEls),
+              el('div', { class: 'trust-copy' },
+                el('strong', {}, `${topProjectsCount}+ Shipped Projects & ${topSkillsCount}+ Mastered Techs`),
+                document.createElement('br'),
+                'Engineered for speed, resilience, and visual craftsmanship.'
+              )
+            )
+          ),
+          // Right Column: Tilted Product / Developer Dashboard Mockup
+          el('div', { class: 'hero-right' },
+            el('div', { class: 'tilted-card' },
+              // Chrome bar
+              el('div', { class: 'card-chrome' },
+                el('div', { class: 'traffic-dots' },
+                  el('span', { class: 'traffic-dot dot-coral' }),
+                  el('span', { class: 'traffic-dot dot-mustard' }),
+                  el('span', { class: 'traffic-dot dot-teal' })
+                ),
+                el('span', { class: 'card-chrome-title' }, `~/portfolio/${(DATA.name || 'developer').toLowerCase().replace(/\\s+/g, '-')}.ts`)
+              ),
+              // Body
+              el('div', { class: 'card-body-content' },
+                el('div', { class: 'metrics-header' },
+                  el('span', { class: 'metrics-title' }, 'Engineering Velocity'),
+                  el('span', { class: 'status-chip' }, '⚡ 100% Active')
+                ),
+                // 6-Bar Proficiency Chart
+                el('div', { class: 'chart-box' },
+                  el('div', { class: 'chart-bars' },
+                    createBar('mustard', 48, 'UI/UX'),
+                    createBar('coral', 72, 'React'),
+                    createBar('violet', 88, 'TS'),
+                    createBar('teal', 94, 'APIs'),
+                    createBar('sky', 68, 'SQL'),
+                    createBar('coral', 84, 'Ops')
+                  )
+                ),
+                // Checklist
+                el('div', { class: 'checklist' },
+                  el('div', { class: 'checklist-row' },
+                    el('span', { class: 'check-icon check-teal' }, '✓'),
+                    el('span', {}, 'Full-stack architecture & edge deployments')
+                  ),
+                  el('div', { class: 'checklist-row' },
+                    el('span', { class: 'check-icon check-teal' }, '✓'),
+                    el('span', {}, 'Pixel-perfect, accessible user interfaces')
+                  ),
+                  el('div', { class: 'checklist-row' },
+                    el('span', { class: 'check-icon check-teal' }, '✓'),
+                    el('span', {}, 'Scalable databases & microservice backends')
+                  )
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+
+    function createBar(color, heightPercent, label) {
+      return el('div', { class: 'bar-col' },
+        el('div', {
+          class: 'chart-bar',
+          style: `height: ${heightPercent}%; background-color: var(--${color});`
+        }),
+        el('span', { class: 'bar-label' }, label)
+      );
+    }
+
+    // Full Bleed Pitch Black Tech Strip
+    function renderBlackStrip() {
+      if (!DATA.skills.length) return null;
+      const items = DATA.skills.slice(0, 10).map(s =>
+        el('span', { class: 'strip-item' }, s)
+      );
+
+      return el('div', { class: 'black-strip' },
+        el('div', { class: 'wrap strip-inner' },
+          el('div', { class: 'strip-label' }, '★ CORE TECH & TOOLS'),
+          el('div', { class: 'strip-tags' }, ...items)
+        )
+      );
+    }
+
+    // About Section
+    function renderAbout() {
+      return el('section', { id: 'about', class: 'section' },
+        el('div', { class: 'wrap' },
+          el('div', { class: 'section-header-center' },
+            el('div', { class: 'eyebrow-pill' }, 'ABOUT ME'),
+            el('h2', { class: 'section-heading' },
+              'Building with ',
+              el('span', { class: 'marker-highlight marker-coral' }, 'obsessive craft'),
+              ' and speed.'
+            ),
+            el('p', { class: 'section-desc' }, DATA.about)
+          )
+        )
+      );
+    }
+
+    // Featured Projects Section
+    function renderProjects() {
+      if (!DATA.sections.showProjects || !DATA.projects.length) return null;
+
+      const chipColors = ['coral', 'teal', 'violet', 'mustard', 'sky'];
+      const icons = ['⚡', '💎', '🚀', '🔮', '🛠️', '✨'];
+
+      const cards = DATA.projects.map((proj, idx) => {
+        const color = chipColors[idx % chipColors.length];
+        const icon = icons[idx % icons.length];
+
+        const techPills = (proj.tech || []).map(t =>
+          el('span', { class: 'tech-pill' }, t)
+        );
+
+        return el('div', { class: 'project-card' },
+          el('div', {
+            class: 'corner-accent',
+            style: `background-color: var(--${color});`
+          }),
+          el('div', { class: 'project-card-header' },
+            el('div', { class: `icon-chip chip-${color}` }, icon),
+            proj.url ? el('a', {
+              href: proj.url,
+              target: '_blank',
+              class: 'project-link-btn'
+            }, 'Visit ↗') : null
+          ),
+          el('div', { class: 'project-card-body' },
+            el('h3', { class: 'project-title' }, proj.name),
+            el('p', { class: 'project-desc' }, proj.description),
+            techPills.length ? el('div', { class: 'tech-badges-row' }, ...techPills) : null
+          )
+        );
+      });
+
+      return el('section', { id: 'projects', class: 'section' },
+        el('div', { class: 'wrap' },
+          el('div', { class: 'section-header-center' },
+            el('div', { class: 'eyebrow-pill' }, 'FEATURED WORK'),
+            el('h2', { class: 'section-heading' },
+              'Selected projects that ',
+              el('span', { class: 'marker-highlight marker-teal' }, 'actually ship'),
+              '.'
+            ),
+            el('p', { class: 'section-desc' },
+              'From full-stack distributed engines to polished interactive frontends.'
+            )
+          ),
+          el('div', { class: 'projects-grid' }, ...cards)
+        )
+      );
+    }
+
+    // Skills Matrix Section
+    function renderSkills() {
+      if (!DATA.sections.showSkills || !DATA.skills.length) return null;
+
+      const tagColors = ['tag-coral', 'tag-teal', 'tag-mustard', 'tag-violet', 'tag-sky'];
+
+      const tags = DATA.skills.map((skill, i) =>
+        el('div', { class: `skill-tag ${tagColors[i % tagColors.length]}` }, skill)
+      );
+
+      return el('section', { id: 'skills', class: 'section' },
+        el('div', { class: 'wrap' },
+          el('div', { class: 'section-header-center' },
+            el('div', { class: 'eyebrow-pill' }, 'SKILLS & ARSENAL'),
+            el('h2', { class: 'section-heading' },
+              'Tools & technologies in my ',
+              el('span', { class: 'marker-highlight marker-mustard' }, 'daily arsenal'),
+              '.'
+            )
+          ),
+          el('div', { class: 'skills-wrapper' },
+            el('div', { class: 'skills-cloud' }, ...tags)
+          )
+        )
+      );
+    }
+
+    // Experience Section
+    function renderExperience() {
+      if (!DATA.sections.showExperience || !DATA.experience.length) return null;
+
+      const items = DATA.experience.map(exp =>
+        el('div', { class: 'timeline-card' },
+          el('div', { class: 'timeline-header' },
+            el('div', {},
+              el('h3', { class: 'timeline-role' }, exp.role),
+              el('div', { class: 'timeline-company' }, exp.company)
+            ),
+            el('div', { class: 'timeline-date-chip' },
+              (exp.start || '') + (exp.start && exp.end ? ' – ' : '') + (exp.end || '')
+            )
+          ),
+          el('p', { class: 'timeline-body' }, exp.description)
+        )
+      );
+
+      return el('section', { id: 'experience', class: 'section' },
+        el('div', { class: 'wrap' },
+          el('div', { class: 'section-header-center' },
+            el('div', { class: 'eyebrow-pill' }, 'TRACK RECORD'),
+            el('h2', { class: 'section-heading' },
+              'Where I have made an ',
+              el('span', { class: 'marker-highlight marker-coral' }, 'impact'),
+              '.'
+            )
+          ),
+          el('div', { class: 'timeline-container' }, ...items)
+        )
+      );
+    }
+
+    // Education Section
+    function renderEducation() {
+      if (!DATA.sections.showEducation || !DATA.education.length) return null;
+
+      const items = DATA.education.map(edu =>
+        el('div', { class: 'edu-card' },
+          el('h3', { class: 'edu-degree' }, edu.degree),
+          el('div', { class: 'edu-school' }, edu.school),
+          edu.end ? el('div', { class: 'edu-date' }, (edu.start ? edu.start + ' – ' : '') + edu.end) : null
+        )
+      );
+
+      return el('section', { id: 'education', class: 'section' },
+        el('div', { class: 'wrap' },
+          el('div', { class: 'section-header-center' },
+            el('div', { class: 'eyebrow-pill' }, 'EDUCATION'),
+            el('h2', { class: 'section-heading' }, 'Academic Background')
+          ),
+          el('div', { class: 'education-grid' }, ...items)
+        )
+      );
+    }
+
+    // Contact Callout Card
+    function renderContact() {
+      const contactButtons = [];
+
+      if (DATA.contact.email) {
+        contactButtons.push(
+          el('a', {
+            href: `mailto:${DATA.contact.email}`,
+            class: 'contact-pill-btn btn-mail'
+          }, `✉ ${DATA.contact.email}`)
+        );
+      }
+      if (DATA.contact.phone) {
+        contactButtons.push(
+          el('a', {
+            href: `tel:${DATA.contact.phone}`,
+            class: 'contact-pill-btn'
+          }, `📞 ${DATA.contact.phone}`)
+        );
+      }
+      if (DATA.links.github) {
+        contactButtons.push(
+          el('a', {
+            href: DATA.links.github,
+            target: '_blank',
+            class: 'contact-pill-btn'
+          }, '↗ GitHub')
+        );
+      }
+      if (DATA.links.linkedin) {
+        contactButtons.push(
+          el('a', {
+            href: DATA.links.linkedin,
+            target: '_blank',
+            class: 'contact-pill-btn'
+          }, '↗ LinkedIn')
+        );
+      }
+      if (DATA.links.website) {
+        contactButtons.push(
+          el('a', {
+            href: DATA.links.website,
+            target: '_blank',
+            class: 'contact-pill-btn'
+          }, '↗ Website')
+        );
+      }
+
+      return el('section', { id: 'contact', class: 'section' },
+        el('div', { class: 'wrap' },
+          el('div', { class: 'contact-hero-card' },
+            el('div', { class: 'eyebrow-pill', style: 'background-color: var(--ink-black);' }, "LET'S BUILD"),
+            el('h2', { class: 'contact-hero-title' }, 'Got an exciting project in mind?'),
+            el('p', { class: 'contact-hero-desc' },
+              "I am always keen to discuss new opportunities, innovative products, or interesting technical challenges. Drop me a line!"
+            ),
+            contactButtons.length ? el('div', { class: 'contact-buttons-grid' }, ...contactButtons) : null
+          )
+        )
+      );
+    }
+
+    // Footer
+    function renderFooter() {
+      const year = new Date().getFullYear();
+      return el('footer', { class: 'footer' },
+        el('div', { class: 'wrap footer-inner' },
+          el('div', { class: 'footer-copy' },
+            `© ${year} `,
+            el('strong', {}, DATA.name),
+            ' • Built with Memphis Pop aesthetic.'
+          ),
+          el('a', { href: '#', class: 'footer-back-top' }, '↑ Back to Top')
+        )
+      );
+    }
+
+    // Master Render
+    function render() {
+      const app = document.getElementById('app');
+      app.innerHTML = '';
+
+      app.appendChild(renderNav());
+      app.appendChild(renderHero());
+
+      const strip = renderBlackStrip();
+      if (strip) app.appendChild(strip);
+
+      app.appendChild(renderAbout());
+
+      const proj = renderProjects();
+      if (proj) app.appendChild(proj);
+
+      const sk = renderSkills();
+      if (sk) app.appendChild(sk);
+
+      const exp = renderExperience();
+      if (exp) app.appendChild(exp);
+
+      const edu = renderEducation();
+      if (edu) app.appendChild(edu);
+
+      app.appendChild(renderContact());
+      app.appendChild(renderFooter());
+    }
+
+    render();
+
+    // Smooth In-Page Anchor Navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const id = this.getAttribute('href').slice(1);
+        if (!id) return;
+        const target = document.getElementById(id);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          if (history.pushState) history.pushState(null, '', '#' + id);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

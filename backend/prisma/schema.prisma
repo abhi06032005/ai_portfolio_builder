@@ -1,0 +1,61 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum PortfolioStatus {
+  DRAFT
+  PREVIEW
+  DEPLOYED
+
+  @@map("portfolio_status")
+}
+
+model User {
+  id          String       @id @default(uuid())
+  clerkId     String       @unique @map("clerk_id")
+  email       String
+  githubToken String?      @map("github_token")
+  resumes     Resume[]
+  portfolios  Portfolio[]
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Resume {
+  id               String       @id @default(uuid())
+  userId           String       @map("user_id")
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalFilename String       @map("original_filename")
+  filePath         String       @map("file_path")
+  email            String?      // Extracted email from resume
+  rawText          String?      @map("raw_text") @db.Text // Full raw extracted text from PDF/DOCX
+  parsedData       Json?        @map("parsed_data") // Structured AI ResumeData
+  portfolios       Portfolio[]
+  createdAt        DateTime     @default(now()) @map("created_at")
+
+  @@map("resumes")
+}
+
+model Portfolio {
+  id           String          @id @default(uuid())
+  userId       String          @map("user_id")
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resumeId     String?         @map("resume_id")
+  resume       Resume?         @relation(fields: [resumeId], references: [id], onDelete: SetNull)
+  templateId   String          @default("minimal") @map("template_id")
+  data         Json            // The ResumeData JSON used to render
+  previewToken String?         @unique @map("preview_token")
+  githubRepo   String?         @map("github_repo")
+  status       PortfolioStatus @default(DRAFT)
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  @@map("portfolios")
+}

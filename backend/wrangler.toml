@@ -1,0 +1,43 @@
+name = "portfolio-maker-backend"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+AI_MAX_CONCURRENCY = "5"
+PRIMARY_AI_PROVIDER = "openai"
+FALLBACK_AI_PROVIDER = "gemini"
+MAX_ACTIVE_JOBS_PER_USER = "2"
+MAX_HOURLY_JOBS_PER_USER = "10"
+MAX_FILE_SIZE_MB = "10"
+
+# Cloudflare D1 Relational Database
+[[d1_databases]]
+binding = "DB"
+database_name = "portfolio_maker"
+database_id = "portfolio-maker-d1"
+migrations_dir = "migrations"
+
+# Cloudflare R2 Permanent Storage
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "portfolio-maker-storage"
+
+# Cloudflare Queue Producer
+[[queues.producers]]
+binding = "PORTFOLIO_QUEUE"
+queue = "portfolio-generation-queue"
+
+# Cloudflare Queue Consumer
+[[queues.consumers]]
+queue = "portfolio-generation-queue"
+max_batch_size = 5
+max_batch_timeout = 30
+max_retries = 4
+dead_letter_queue = "portfolio-generation-dlq"
+max_concurrency = 5
+
+# Cloudflare KV for caching and config
+[[kv_namespaces]]
+binding = "CACHE_KV"
+id = "portfolio-cache-kv"
