@@ -9,11 +9,13 @@ import {
 interface HeaderProps {
   onOpenUpload: () => void;
   onOpenPortfolios: () => void;
+  onOpenDashboard?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenUpload,
   onOpenPortfolios,
+  onOpenDashboard,
 }) => {
   return (
     <header className="sleek-header">
@@ -35,11 +37,21 @@ export const Header: React.FC<HeaderProps> = ({
           <a href="#templates" className="nav-link">Templates</a>
           <a href="#how-it-works" className="nav-link">How it Works</a>
           <a href="#features" className="nav-link">Features</a>
+          {onOpenDashboard && (
+            <button className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer', font: 'inherit' }} onClick={onOpenDashboard}>
+              Dashboard
+            </button>
+          )}
         </nav>
 
         {/* Right Actions */}
         <div className="header-actions">
           <SignedOut>
+            {onOpenDashboard && (
+              <button className="btn-signin-ghost" onClick={onOpenDashboard}>
+                Livefolio Dashboard
+              </button>
+            )}
             <SignInButton mode="modal">
               <button className="btn-signin-ghost">Sign In</button>
             </SignInButton>
@@ -49,6 +61,11 @@ export const Header: React.FC<HeaderProps> = ({
           </SignedOut>
 
           <SignedIn>
+            {onOpenDashboard && (
+              <button className="btn-signin-ghost" onClick={onOpenDashboard}>
+                Dashboard
+              </button>
+            )}
             <button className="btn-signin-ghost" onClick={onOpenPortfolios}>
               My Portfolios
             </button>

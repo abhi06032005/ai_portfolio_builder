@@ -7,7 +7,8 @@ import { Features } from './components/Features';
 import { Testimonials } from './components/Testimonials';
 import { Footer } from './components/Footer';
 import { PortfoliosDrawer } from './components/PortfoliosDrawer';
-import { PortfolioStudio, SAMPLE_DEVELOPER_DATA } from './components/PortfolioStudio';
+import { SAMPLE_DEVELOPER_DATA } from './components/PortfolioStudio';
+import { LivefolioDashboard } from './components/dashboard/LivefolioDashboard';
 import { DonateModal } from './components/DonateModal';
 import { ResumeData } from './types';
 
@@ -39,18 +40,18 @@ export const App: React.FC = () => {
   const handleOpenDonate = () => setIsDonateOpen(true);
   const handleCloseDonate = () => setIsDonateOpen(false);
 
-  // Direct demo studio launch
-  const handleLaunchDemoStudio = () => {
+  // Direct Livefolio dashboard launch
+  const handleLaunchLivefolioDashboard = () => {
     setActiveResumeData(SAMPLE_DEVELOPER_DATA);
     setActiveTemplate('minimal');
     setIsStudioOpen(true);
   };
 
-  // If Studio view is active, render full-screen split editor
+  // If Livefolio dashboard view is active, render full-screen Livefolio Dashboard
   if (isStudioOpen) {
     return (
       <>
-        <PortfolioStudio
+        <LivefolioDashboard
           onBackToHome={() => setIsStudioOpen(false)}
           initialTemplate={activeTemplate}
           initialData={activeResumeData}
@@ -73,7 +74,8 @@ export const App: React.FC = () => {
           }
         }}
         onOpenPortfolios={handleOpenPortfolios}
-        onViewDemo={handleLaunchDemoStudio}
+        onViewDemo={handleLaunchLivefolioDashboard}
+        onOpenDashboard={handleLaunchLivefolioDashboard}
         onOpenDonate={handleOpenDonate}
       />
 
@@ -110,8 +112,8 @@ export const App: React.FC = () => {
                 <path d="M3.5 8h9M8.5 3.5L13 8l-4.5 4.5" />
               </svg>
             </button>
-            <button className="btn-bcta-secondary" onClick={handleLaunchDemoStudio}>
-              Launch Studio Demo
+            <button className="btn-bcta-secondary" onClick={handleLaunchLivefolioDashboard}>
+              Launch Livefolio Dashboard
             </button>
           </div>
         </div>

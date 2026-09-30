@@ -52,6 +52,49 @@ export interface ResumeData {
   education: EducationItem[];
   projects: ProjectItem[];
   sections: SectionVisibility;
+  integrations?: {
+    github?: {
+      username: string;
+      isConnected: boolean;
+      totalStars?: number;
+      topLanguages?: string[];
+      repos?: Array<{
+        name: string;
+        description: string;
+        url: string;
+        stars: number;
+        forks: number;
+        language: string;
+      }>;
+    };
+    leetcode?: {
+      username: string;
+      isConnected: boolean;
+      totalSolved: number;
+      easySolved: number;
+      mediumSolved: number;
+      hardSolved: number;
+      ranking?: string | number;
+      acceptanceRate?: number;
+    };
+    medium?: {
+      username: string;
+      isConnected: boolean;
+      platform?: 'medium' | 'devto';
+      articles?: Array<{
+        title: string;
+        link: string;
+        pubDate: string;
+        description?: string;
+        coverImage?: string;
+        readTime?: string;
+      }>;
+    };
+  };
+  accentColor?: string;
+  subdomain?: string;
+  customDomain?: string;
+  isPublished?: boolean;
 }
 
 export interface PortfolioRecord {

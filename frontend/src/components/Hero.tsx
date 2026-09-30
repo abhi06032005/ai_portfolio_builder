@@ -6,12 +6,14 @@ interface HeroProps {
   onOpenPortfolios: () => void;
   onViewDemo: () => void;
   onOpenDonate: () => void;
+  onOpenDashboard?: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
   onExploreTemplates,
   onOpenPortfolios,
   onViewDemo,
+  onOpenDashboard,
 }) => {
   return (
     <div className="hero-outer" id="home">
@@ -19,6 +21,7 @@ export const Hero: React.FC<HeroProps> = ({
       <Header
         onOpenUpload={onExploreTemplates}
         onOpenPortfolios={onOpenPortfolios}
+        onOpenDashboard={onOpenDashboard || onViewDemo}
       />
 
       {/* Hero Content Section */}
