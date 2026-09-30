@@ -9,9 +9,14 @@ import { domainRouter } from './domains';
 
 export const apiRouter = new Hono<{ Bindings: Env }>();
 
-// 1. Resumes - All endpoints require authentication
-apiRouter.use('/resumes', authMiddleware);
-apiRouter.use('/resumes/*', authMiddleware);
+// 1. Resumes - Allow instant synchronous parse/upload for studio visitors
+apiRouter.use('/resumes/*', async (c, next) => {
+  const p = c.req.path;
+  if (p.endsWith('/parse') || p.endsWith('/upload')) {
+    return next();
+  }
+  return authMiddleware(c, next);
+});
 apiRouter.route('/resumes', resumeRouter);
 
 // 2. Jobs - Polling requires authentication

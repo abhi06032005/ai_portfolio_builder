@@ -1,142 +1,112 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { Header } from './Header';
 
 interface HeroProps {
-  onOpenUpload: () => void;
+  onExploreTemplates: () => void;
   onOpenPortfolios: () => void;
   onViewDemo: () => void;
   onOpenDonate: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
-  onOpenUpload,
+  onExploreTemplates,
   onOpenPortfolios,
   onViewDemo,
-  onOpenDonate,
 }) => {
-  const stageRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!stageRef.current) return;
-      const xRatio = e.clientX / window.innerWidth - 0.5;
-      const yRatio = e.clientY / window.innerHeight;
-      stageRef.current.style.transform = `rotateX(${8 - yRatio * 4}deg) rotateY(${xRatio * 14}deg)`;
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
   return (
     <div className="hero-outer" id="home">
-      <div className="hero-card">
-        {/* Navigation with Clerk Auth */}
-        <Header onOpenUpload={onOpenUpload} onOpenPortfolios={onOpenPortfolios} />
+      {/* Top Header */}
+      <Header
+        onOpenUpload={onExploreTemplates}
+        onOpenPortfolios={onOpenPortfolios}
+      />
 
-        {/* Center Headline & Action Buttons */}
-        <div className="hero-center">
-          <h1 className="hero-h1">
-            Get your portfolio done in seconds.<br />
-            Add your resume &amp; get started.
-          </h1>
+      {/* Hero Content Section */}
+      <div className="hero-inner">
+        {/* Sleek Pill Badge */}
+        <div className="hero-badge-pill" onClick={onExploreTemplates}>
+          <span className="badge-sparkle">✨</span>
+          <span className="badge-text">Next-Gen AI Portfolio Builder</span>
+          <span className="badge-arrow">→</span>
+        </div>
 
-          <p className="hero-sub">
-            Turn your PDF resume or work history into a stunning, high-converting developer portfolio. AI extracts your story, designs a custom website, and deploys it live at your personal link.
-          </p>
+        {/* Primary Headline */}
+        <h1 className="hero-heading">
+          Select your aesthetic.<br />
+          <span className="hero-heading-gradient">Deploy your live portfolio in seconds.</span>
+        </h1>
 
-          <div className="hero-cta-row">
-            <button className="btn-get-started btn-shiny" onClick={onOpenUpload}>
-              <span>Get Started</span>
-              <div className="btn-arrow-circle">
-                <svg
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M4.5 11.5L11.5 4.5M5.5 4.5h6v6" />
-                </svg>
+        {/* Subtitle */}
+        <p className="hero-subtext">
+          Browse handcrafted modern templates, drop your resume or LinkedIn, and let ultra-fast Groq AI generate a stunning personal website ready for production.
+        </p>
+
+        {/* CTA Buttons */}
+        <div className="hero-actions">
+          <button className="btn-hero-primary" onClick={onExploreTemplates}>
+            <span>Browse Templates & Start</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3.5 8h9M8.5 3.5L13 8l-4.5 4.5" />
+            </svg>
+          </button>
+          <button className="btn-hero-secondary" onClick={onViewDemo}>
+            <span>Launch Live Studio</span>
+          </button>
+        </div>
+
+        {/* Trust & Spec Badges */}
+        <div className="hero-trust-bar">
+          <div className="trust-item">
+            <span className="trust-check">✓</span>
+            <span>6 Curated Themes</span>
+          </div>
+          <div className="trust-item">
+            <span className="trust-check">✓</span>
+            <span>Groq LLaMA 3.3 Engine</span>
+          </div>
+          <div className="trust-item">
+            <span className="trust-check">✓</span>
+            <span>Instant ZIP Download</span>
+          </div>
+          <div className="trust-item">
+            <span className="trust-check">✓</span>
+            <span>Cloudflare Edge Delivery</span>
+          </div>
+        </div>
+
+        {/* Interactive Floating Preview Teaser */}
+        <div className="hero-preview-frame" onClick={onExploreTemplates}>
+          <div className="hpf-header">
+            <div className="hpf-dots">
+              <span className="hpf-dot red" />
+              <span className="hpf-dot yellow" />
+              <span className="hpf-dot green" />
+            </div>
+            <div className="hpf-url-bar">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+              <span>alexrivera.portfolio.dev</span>
+            </div>
+            <div className="hpf-tag">Preview Mode</div>
+          </div>
+          <div className="hpf-content">
+            <div className="hpf-mockup-header">
+              <div className="hpf-avatar">AR</div>
+              <div>
+                <div className="hpf-mockup-name">Alex Rivera</div>
+                <div className="hpf-mockup-role">Staff Distributed Systems Engineer</div>
               </div>
-            </button>
-
-            <button className="btn-donate-hero" onClick={onOpenDonate} title="Support this open source project">
-              <span>☕ Donate to this project</span>
-            </button>
-
-            <button className="btn-view-demo" onClick={onViewDemo}>
-              View Live Studio
-            </button>
-          </div>
-        </div>
-
-        {/* 3D Cylindrical Cards Arc */}
-        <div className="hero-carousel-wrap">
-          <div className="carousel-stage" ref={stageRef}>
-            {/* Card 1: Intelligence in Every Decision (Bar Graph) */}
-            <div className="float-card card-pos-1" title="Intelligence in Every Decision" onClick={onViewDemo}>
-              <img
-                src="https://framerusercontent.com/images/6CIbzpanm9QwttboqUvfD3LJr94.png?width=630"
-                alt="Intelligence in Every Decision"
-              />
             </div>
-
-            {/* Card 2: Calendar & Messages Live Pill Badges */}
-            <div className="float-card card-pos-2" title="Calendar & Messages Live" onClick={onViewDemo}>
-              <img
-                src="https://framerusercontent.com/images/fIybNZHyBu72xfFTdyUzRgab0Mc.png?width=630"
-                alt="Calendar and Messages Live"
-              />
-            </div>
-
-            {/* Card 3: Performance 49% Business Growth */}
-            <div className="float-card card-pos-3" title="Performance 49% Growth" onClick={onViewDemo}>
-              <img
-                src="https://framerusercontent.com/images/Xs5D1qDo4uJKopeDuIyOE87MqPw.png?width=630"
-                alt="Performance 49% Growth"
-              />
-            </div>
-
-            {/* Card 4 (Center): Data Points 520k+ */}
-            <div className="float-card card-pos-4" title="Data Points 520k+" onClick={onOpenUpload}>
-              <img
-                src="https://framerusercontent.com/images/9OmbiS9xjEf1LBFWMnuglmayMKk.png?width=630"
-                alt="Data Points 520k+"
-              />
-            </div>
-
-            {/* Card 5: Data Training Upload Content (Cyan Glow) */}
-            <div className="float-card card-pos-5" title="Data Training Upload Content" onClick={onOpenUpload}>
-              <img
-                src="https://framerusercontent.com/images/DJtFCnryarmP1ZSHtWkVN0XYXuM.png?width=630"
-                alt="Data Training"
-              />
-            </div>
-
-            {/* Card 6: Expertise Combining Strategy & Data */}
-            <div className="float-card card-pos-6" title="Strategy and Data Expertise" onClick={onViewDemo}>
-              <img
-                src="https://framerusercontent.com/images/wAB2rKVe4BkrVIHZAOdZS3FE6Tw.png?width=630"
-                alt="Expertise"
-              />
-            </div>
-
-            {/* Card 7: Analytics Overview */}
-            <div className="float-card card-pos-7" title="Analytics Overview" onClick={onViewDemo}>
-              <img
-                src="https://framerusercontent.com/images/sO1jgMhBr28EnEhgtxehLBQaFI.png?width=630"
-                alt="Analytics"
-              />
+            <div className="hpf-mockup-chips">
+              <span className="hpf-chip">TypeScript</span>
+              <span className="hpf-chip">React</span>
+              <span className="hpf-chip">Cloudflare Workers</span>
+              <span className="hpf-chip">Go</span>
+              <span className="hpf-chip">PostgreSQL</span>
             </div>
           </div>
-        </div>
-
-        {/* Bottom Rating */}
-        <div className="hero-rating-box">
-          <div className="rating-label">Rated 4.9/5 by 4.900+ developers</div>
-          <div className="rating-stars">★★★★★</div>
+          <div className="hpf-floating-banner">
+            <span>🎨 Click to choose template and customize live</span>
+          </div>
         </div>
       </div>
     </div>

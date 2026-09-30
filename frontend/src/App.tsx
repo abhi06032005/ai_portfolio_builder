@@ -1,40 +1,59 @@
 import React, { useState } from 'react';
 import { Hero } from './components/Hero';
-import { LogoStrip } from './components/LogoStrip';
-import { AboutSection } from './components/AboutSection';
-import { BentoGrid } from './components/BentoGrid';
+import { TemplateGallery } from './components/TemplateGallery';
+import { ResumeIngestionModal } from './components/ResumeIngestionModal';
 import { HowItWorks } from './components/HowItWorks';
 import { Features } from './components/Features';
 import { Testimonials } from './components/Testimonials';
 import { Footer } from './components/Footer';
 import { PortfoliosDrawer } from './components/PortfoliosDrawer';
-import { PortfolioStudio } from './components/PortfolioStudio';
+import { PortfolioStudio, SAMPLE_DEVELOPER_DATA } from './components/PortfolioStudio';
 import { DonateModal } from './components/DonateModal';
+import { ResumeData } from './types';
 
 export const App: React.FC = () => {
   const [isStudioOpen, setIsStudioOpen] = useState(false);
-  const [studioInitialMode, setStudioInitialMode] = useState<'upload' | 'manual'>('upload');
+  const [activeTemplate, setActiveTemplate] = useState('minimal');
+  const [activeResumeData, setActiveResumeData] = useState<ResumeData>(SAMPLE_DEVELOPER_DATA);
+  const [isIngestionModalOpen, setIsIngestionModalOpen] = useState(false);
   const [isPortfoliosOpen, setIsPortfoliosOpen] = useState(false);
   const [isDonateOpen, setIsDonateOpen] = useState(false);
 
-  const handleOpenStudio = (mode: 'upload' | 'manual' = 'upload') => {
-    setStudioInitialMode(mode);
-    setIsStudioOpen(true);
+  // When a user selects a template from the gallery or hero
+  const handleSelectTemplate = (templateId: string) => {
+    setActiveTemplate(templateId);
+    setIsIngestionModalOpen(true);
   };
 
-  const handleOpenDonate = () => setIsDonateOpen(true);
-  const handleCloseDonate = () => setIsDonateOpen(false);
+  // When resume data is extracted by AI or chosen from demo
+  const handleResumeDataParsed = (data: ResumeData, templateId: string) => {
+    setActiveResumeData(data);
+    setActiveTemplate(templateId);
+    setIsIngestionModalOpen(false);
+    setIsStudioOpen(true);
+  };
 
   const handleOpenPortfolios = () => setIsPortfoliosOpen(true);
   const handleClosePortfolios = () => setIsPortfoliosOpen(false);
 
-  // If Studio view is active, render the full-screen split editor
+  const handleOpenDonate = () => setIsDonateOpen(true);
+  const handleCloseDonate = () => setIsDonateOpen(false);
+
+  // Direct demo studio launch
+  const handleLaunchDemoStudio = () => {
+    setActiveResumeData(SAMPLE_DEVELOPER_DATA);
+    setActiveTemplate('minimal');
+    setIsStudioOpen(true);
+  };
+
+  // If Studio view is active, render full-screen split editor
   if (isStudioOpen) {
     return (
       <>
         <PortfolioStudio
           onBackToHome={() => setIsStudioOpen(false)}
-          initialMode={studioInitialMode}
+          initialTemplate={activeTemplate}
+          initialData={activeResumeData}
         />
         <DonateModal isOpen={isDonateOpen} onClose={handleCloseDonate} />
       </>
@@ -42,74 +61,82 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="app-root">
-      {/* Hero Section with Full-Bleed Aesthetics, Punchlines & Action Buttons */}
+    <div className="app-root sleek-white-theme">
+      {/* Sleek Minimalist Hero */}
       <Hero
-        onOpenUpload={() => handleOpenStudio('upload')}
+        onExploreTemplates={() => {
+          const el = document.getElementById('templates');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            handleSelectTemplate('minimal');
+          }
+        }}
         onOpenPortfolios={handleOpenPortfolios}
-        onViewDemo={() => handleOpenStudio('manual')}
+        onViewDemo={handleLaunchDemoStudio}
         onOpenDonate={handleOpenDonate}
       />
 
-      {/* Brand Logos Marquee */}
-      <LogoStrip />
+      {/* Step 1: Interactive Template Gallery & Live Preview */}
+      <TemplateGallery
+        onSelectTemplate={handleSelectTemplate}
+        sampleData={activeResumeData}
+      />
 
-      {/* About Partner Section */}
-      <AboutSection />
-
-      {/* Bento Grid (120+, 100%, 520k+) */}
-      <BentoGrid onOpenUpload={() => handleOpenStudio('upload')} />
-
-      {/* How it works */}
+      {/* How It Works */}
       <HowItWorks />
 
-      {/* Capabilities / Features */}
+      {/* Features & Capabilities */}
       <Features />
 
       {/* Testimonials */}
       <Testimonials />
 
-      {/* Bottom CTA Card */}
-      <div className="section-wrap" style={{ paddingTop: 0 }}>
-        <div className="bottom-cta">
-          <h2>Ready to build your live portfolio?</h2>
-          <p>
-            Upload your resume, let AI extract your story, and deploy to your personal edge-cached link in seconds.
+      {/* Bottom Sleek CTA */}
+      <section className="sleek-bottom-cta">
+        <div className="bottom-cta-card">
+          <span className="bcta-badge">✦ Instant Generation</span>
+          <h2 className="bcta-title">Ready to launch your executive portfolio?</h2>
+          <p className="bcta-desc">
+            Choose a template, drop your resume, and let Groq AI build your portfolio site in under 30 seconds.
           </p>
-          <div className="bottom-cta-btns">
-            <button className="btn-view-demo" onClick={() => handleOpenStudio('manual')}>
-              Launch Studio Form
+          <div className="bcta-actions">
+            <button
+              className="btn-bcta-primary"
+              onClick={() => handleSelectTemplate('minimal')}
+            >
+              <span>Get Started Now</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3.5 8h9M8.5 3.5L13 8l-4.5 4.5" />
+              </svg>
             </button>
-            <button className="btn-get-started btn-shiny" onClick={() => handleOpenStudio('upload')}>
-              <span>Get Started</span>
-              <div className="btn-arrow-circle">
-                <svg
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M4.5 11.5L11.5 4.5M5.5 4.5h6v6" />
-                </svg>
-              </div>
+            <button className="btn-bcta-secondary" onClick={handleLaunchDemoStudio}>
+              Launch Studio Demo
             </button>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Footer */}
       <Footer />
 
-      {/* My Portfolios Drawer */}
+      {/* Step 2: Ingestion Modal (File upload, text paste, demo profile) */}
+      <ResumeIngestionModal
+        isOpen={isIngestionModalOpen}
+        selectedTemplateId={activeTemplate}
+        onClose={() => setIsIngestionModalOpen(false)}
+        onDataParsed={handleResumeDataParsed}
+        sampleData={SAMPLE_DEVELOPER_DATA}
+      />
+
+      {/* Portfolios Drawer */}
       <PortfoliosDrawer
         isOpen={isPortfoliosOpen}
         onClose={handleClosePortfolios}
-        onNewPortfolio={() => handleOpenStudio('upload')}
+        onNewPortfolio={() => handleSelectTemplate('minimal')}
       />
 
-      {/* Donate / Project Support Modal */}
+      {/* Donate Modal */}
       <DonateModal isOpen={isDonateOpen} onClose={handleCloseDonate} />
     </div>
   );

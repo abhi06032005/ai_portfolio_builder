@@ -8,6 +8,8 @@ import { AppError, okResponse } from '../utils/response';
 import { logger } from '../utils/logger';
 
 import { sanitizeFilename, verifyFileSignature } from '../utils/security';
+import { extractResumeText } from '../resume/extraction';
+import { parseResumeWithAI } from '../resume/ai-parser';
 
 export const resumeRouter = new Hono<{ Bindings: Env; Variables: { userId: string } }>();
 
@@ -20,6 +22,55 @@ const ALLOWED_MIME_TYPES = [
   'application/octet-stream',
 ];
 const ALLOWED_THEMES = ['minimal', 'modern', 'dark', 'terminal', 'bento'];
+
+/**
+ * Common handler for instant synchronous AI resume extraction
+ */
+const handleParseResume = async (c: any) => {
+  const env: Env = c.env;
+  let rawText = '';
+  let filename = '';
+
+  const contentType = (c.req.header('Content-Type') || '').toLowerCase();
+
+  try {
+    if (contentType.includes('application/json')) {
+      const json = await c.req.json().catch(() => ({}));
+      rawText = (json.text || '').trim();
+      filename = json.filename || 'pasted-resume.txt';
+    } else {
+      const body = await c.req.parseBody().catch(() => ({}));
+      const file = body['file'] || body['resume'];
+
+      if (file && typeof file === 'object' && 'arrayBuffer' in file) {
+        filename = (file as File).name;
+        const arrayBuffer = await (file as File).arrayBuffer();
+        const extracted = await extractResumeText(arrayBuffer, (file as File).type || '', filename);
+        rawText = extracted.text;
+      } else if (typeof body['text'] === 'string') {
+        rawText = body['text'].trim();
+        filename = 'pasted-resume.txt';
+      }
+    }
+  } catch (err: any) {
+    logger.warn('Failed to parse incoming request body', { error: err.message });
+  }
+
+  if (!rawText || rawText.length < 5) {
+    throw new AppError('No resume text or file provided. Please upload a PDF/DOCX or paste resume text.', 400, 'EMPTY_CONTENT');
+  }
+
+  logger.info('Starting synchronous resume parse', { length: rawText.length, filename });
+  const parsedData = await parseResumeWithAI(env, rawText, filename);
+
+  return c.json({
+    success: true,
+    data: parsedData,
+  });
+};
+
+resumeRouter.post('/parse', handleParseResume);
+resumeRouter.post('/upload', handleParseResume);
 
 /**
  * POST /api/resumes
